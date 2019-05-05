@@ -50,7 +50,7 @@ class DataPartitioner(object):
         return Partition(self.data, self.partitions[partition])
 
 
-class Net(nn.Module):
+class Net_old(nn.Module):
     """ Network architecture. """
 
     def __init__(self):
@@ -69,6 +69,25 @@ class Net(nn.Module):
         x = F.dropout(x, training=self.training)
         x = self.fc2(x)
         return F.log_softmax(x)
+
+
+class Net(nn.Module):
+    def __init__(self):
+        super(Net, self).__init__()
+        self.conv1 = nn.Conv2d(1, 20, 5, 1)
+        self.conv2 = nn.Conv2d(20, 50, 5, 1)
+        self.fc1 = nn.Linear(4*4*50, 500)
+        self.fc2 = nn.Linear(500, 10)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        x = F.max_pool2d(x, 2, 2)
+        x = F.relu(self.conv2(x))
+        x = F.max_pool2d(x, 2, 2)
+        x = x.view(-1, 4*4*50)
+        x = F.relu(self.fc1(x))
+        x = self.fc2(x)
+        return F.log_softmax(x, dim=1)
 
 
 def partition_dataset():
@@ -91,6 +110,28 @@ def partition_dataset():
     return train_set, bsz
 
 
+def dis_train_dataset(batch_size):
+    train_dataset = datasets.MNIST(
+        './data',
+        train=True,
+        download=True,
+        transform=transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize((0.1307,), (0.3081,))
+        ]))
+
+    train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset)
+
+    bsz = int(batch_size / dist.get_world_size())
+    train_loader = torch.utils.data.DataLoader(
+        train_dataset,
+        batch_size = bsz, 
+        shuffle = (train_sampler is None),
+        sampler = train_sampler)
+     
+    return train_loader, bsz
+
+
 def average_gradients(model):
     """ Gradient averaging. """
     size = float(dist.get_world_size())
@@ -104,6 +145,7 @@ def run(rank, size):
     """ Distributed Synchronous SGD Example """
     torch.manual_seed(1234)
     train_set, bsz = partition_dataset()
+    #train_set, bsz = dis_train_dataset(64)
     model = Net()
     model = model
 #    model = model.cuda(rank)
@@ -123,9 +165,10 @@ def run(rank, size):
             average_gradients(model)
             optimizer.step()
 
-            print('Rank {} Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-                dist.get_rank(), epoch, batch_idx * len(data), len(train_set.dataset),
-                100. * batch_idx / len(train_set), loss.item()))
+            if batch_idx % 10 == 0: 
+                print('Rank {} Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+                    dist.get_rank(), epoch, batch_idx * len(data), len(train_set.dataset),
+                    100. * batch_idx / len(train_set), loss.item()))
 
         print('Rank ',
               dist.get_rank(), ', epoch ', epoch, ': ',
