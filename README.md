@@ -2,7 +2,7 @@
 Pytorch distributed training for CPU
 
 ## Setting
-#### python3.5 virtual environment
+#### python3 virtual environment
 ```
 sudo apt install virtualenv
 virtualenv ~/dispytorch -p python3
@@ -13,6 +13,12 @@ source ~/dispytorch/bin/activate
 pip install https://download.pytorch.org/whl/cpu/torch-1.1.0-cp35-cp35m-linux_x86_64.whl
 pip install torchvision
 ```
+* if python is python3.6, please install as follow
+```
+pip install https://download.pytorch.org/whl/cpu/torch-1.1.0-cp36-cp36m-linux_x86_64.whl
+pip install torchvision
+```
+
 #### Run
 ```
 python dis_mnist.py
