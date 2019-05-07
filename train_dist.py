@@ -255,7 +255,7 @@ if __name__ == "__main__":
     parser.add_argument('--ip', type=str)
     parser.add_argument('--port', type=str)
     parser.add_argument('--rank', type=int)
-    parser.add_argument('--world-size', type=int)
+    parser.add_argument('--world_size', type=int)
     parser.add_argument('--backend', type=str, default="gloo")
     parser.add_argument('--batch_size', type=int, default=64)
     parser.add_argument('--epochs', type=int, default=10)
