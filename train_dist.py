@@ -13,6 +13,9 @@ from torch.multiprocessing import Process
 from torch.autograd import Variable
 from torchvision import datasets, transforms
 
+import time
+import argparse
+
 
 class Partition(object):
     """ Dataset-like object, but only access a subset of it. """
@@ -90,7 +93,7 @@ class Net(nn.Module):
         return F.log_softmax(x, dim=1)
 
 
-def partition_dataset():
+def partition_dataset(batch_size):
     """ Partitioning MNIST """
     dataset = datasets.MNIST(
         './data',
@@ -101,7 +104,7 @@ def partition_dataset():
             transforms.Normalize((0.1307, ), (0.3081, ))
         ]))
     size = dist.get_world_size()
-    bsz = 64 / float(size)
+    bsz = batch_size / float(size)
     partition_sizes = [1.0 / size for _ in range(size)]
     partition = DataPartitioner(dataset, partition_sizes)
     partition = partition.use(dist.get_rank())
@@ -141,22 +144,66 @@ def average_gradients(model):
         param.grad.data /= size
 
 
-def run(rank, size):
+def format_second(secs):
+    return "{:0>2}:{:0>2}:{:0>2}(h:m:s)".format( \
+            int(secs / 3600), int((secs % 3600) / 60), int(secs % 60))
+
+
+def get_test_dataset():
+    test_dataset = datasets.MNIST(
+        './data',
+        train=False,
+        download=True,
+        transform=transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize((0.1307,), (0.3081,))
+        ]))
+    test_loader = torch.utils.data.DataLoader(
+        test_dataset,
+        batch_size=1,
+        shuffle=False)
+    return test_loader
+
+
+def test(model, test_loader):
+    model.eval()
+    test_loss = 0
+    correct = 0
+    with torch.no_grad():
+        for data, target in test_loader:
+            output = model(data)
+            test_loss += F.nll_loss(output, target, reduction='sum').item() # sum up batch loss
+            pred = output.argmax(dim=1, keepdim=True) # get the index of the max log-probability
+            correct += pred.eq(target.view_as(pred)).sum().item()
+
+    test_loss /= len(test_loader.dataset)
+
+    print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.3f}%)\n'.format(
+        test_loss, correct, len(test_loader.dataset),
+        100. * correct / len(test_loader.dataset)))
+    return
+
+
+def run(rank, size, batch_size, epochs):
     """ Distributed Synchronous SGD Example """
     torch.manual_seed(1234)
-    train_set, bsz = partition_dataset()
+    train_set, bsz = partition_dataset(batch_size)
+    test_loader = get_test_dataset()
     #train_set, bsz = dis_train_dataset(64)
     model = Net()
-    model = model
-#    model = model.cuda(rank)
+    model.train()
+    
+    print("Model: {}".format(list(model.parameters())[0].mean()))
+
     optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.5)
 
     num_batches = ceil(len(train_set.dataset) / float(bsz))
-    for epoch in range(10):
+    tt = 0.
+    for epoch in range(epochs):
+        t1 = time.time()
         epoch_loss = 0.0
         for batch_idx, (data, target) in enumerate(train_set):
             data, target = Variable(data), Variable(target)
-#            data, target = Variable(data.cuda(rank)), Variable(target.cuda(rank))
             optimizer.zero_grad()
             output = model(data)
             loss = F.nll_loss(output, target)
@@ -170,21 +217,31 @@ def run(rank, size):
                     dist.get_rank(), epoch, batch_idx * len(data), len(train_set.dataset),
                     100. * batch_idx / len(train_set), loss.item()))
 
-        print('Rank ',
-              dist.get_rank(), ', epoch ', epoch, ': ',
-              epoch_loss / num_batches)
+        t2 = time.time()
+        tt += t2 - t1
+
+        print('Rank {} epoch {} loss {:.5f} cost {:.5f}s'.format( \
+              dist.get_rank(), epoch, epoch_loss / num_batches, t2 - t1))
+        
+        test(model, test_loader)
+    
+    print("Train {} epochs, cost {:.5f} s({}}, average{:.5f} s / epoch ".format(epochs, tt, format_second(tt), tt / epochs))
 
 
-def init_processes(rank, size, fn, backend='gloo'):
-    """ Initialize the distributed environment. """
-    os.environ['MASTER_ADDR'] = '127.0.0.1'
-    os.environ['MASTER_PORT'] = '29500'
-    dist.init_process_group(backend, rank=rank, world_size=size)
-    fn(rank, size)
+def init_process(args):
+    #Initialize the distributed environment.
+    dist.init_process_group(
+        backend = args.backend,
+        init_method = "tcp://{}:{}".format(args.ip, args.port),
+        rank = args.rank,
+        world_size = args.world_size)
+    #Run
+    run(args.rank, args.world_size, args.batch_size, args.epochs)
 
 
 if __name__ == "__main__":
-    size = 2
+    '''
+    size = 1
     processes = []
     for rank in range(size):
         p = Process(target=init_processes, args=(rank, size, run))
@@ -193,3 +250,17 @@ if __name__ == "__main__":
 
     for p in processes:
         p.join()
+    '''
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--ip', type=str)
+    parser.add_argument('--port', type=str)
+    parser.add_argument('--rank', type=int)
+    parser.add_argument('--world-size', type=int)
+    parser.add_argument('--backend', type=str, default="gloo")
+    parser.add_argument('--batch_size', type=int, default=64)
+    parser.add_argument('--epochs', type=int, default=10)
+    
+    args = parser.parse_args()
+    print("Agrs: {}".format(args))
+    
+    init_process(args)
