@@ -139,7 +139,6 @@ def average_gradients(model):
     """ Gradient averaging. """
     size = float(dist.get_world_size())
     for param in model.parameters():
-        #dist.all_reduce(param.grad.data, op=dist.reduce_op.SUM, group=0)
         dist.all_reduce(param.grad.data, op=dist.reduce_op.SUM)
         param.grad.data /= size
 
@@ -199,17 +198,24 @@ def run(rank, size, batch_size, epochs):
 
     num_batches = ceil(len(train_set.dataset) / float(bsz))
     tt = 0.
+    all_conn_tt = 0.
     for epoch in range(epochs):
         t1 = time.time()
         epoch_loss = 0.0
+        epoch_conn_tt = 0.
         for batch_idx, (data, target) in enumerate(train_set):
             data, target = Variable(data), Variable(target)
             optimizer.zero_grad()
             output = model(data)
+
             loss = F.nll_loss(output, target)
             epoch_loss += loss.item()
             loss.backward()
+            
+            conn_t1 = time.time()
             average_gradients(model)
+            epoch_conn_tt += time.time() - conn_t1
+            
             optimizer.step()
 
             if batch_idx % 10 == 0: 
@@ -219,13 +225,19 @@ def run(rank, size, batch_size, epochs):
 
         t2 = time.time()
         tt += t2 - t1
+        all_conn_tt += epoch_conn_tt
 
-        print('Rank {} epoch {} loss {:.5f} cost {:.5f}s'.format( \
-              dist.get_rank(), epoch, epoch_loss / num_batches, t2 - t1))
+        print('Rank {} epoch {} iter {} loss {:.5f} cost {:.5f}s ' \
+              '(conn: {:.5f} s, ave:{:.5f}s/time)'.format( \
+              dist.get_rank(), epoch, len(train_set), epoch_loss / num_batches, \
+              t2 - t1, epoch_conn_tt, epoch_conn_tt/len(train_set)))
         
         test(model, test_loader)
     
-    print("Train {} epochs, cost {:.5f} s({}}, average{:.5f} s / epoch ".format(epochs, tt, format_second(tt), tt / epochs))
+    print("Train {} epochs, cost {:.5f} s({} conn: {:.5f}s " \
+          "ave{:.5f}s/epoch), average{:.5f} s / epoch ".format( \
+           epochs, tt, format_second(tt), all_conn_tt, \
+           all_conn_tt /epochs, tt / epochs))
 
 
 def init_process(args):
