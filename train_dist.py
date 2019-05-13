@@ -15,6 +15,7 @@ from torchvision import datasets, transforms
 
 import time
 import argparse
+import logging
 
 
 class Partition(object):
@@ -135,6 +136,30 @@ def dis_train_dataset(batch_size):
     return train_loader, bsz
 
 
+def init_logger(log_file):
+    
+    logger = logging.getLogger("DIS")
+    logger.setLevel(level = logging.INFO)
+    formatter = logging.Formatter("%(asctime)s-%(filename)s:%(lineno)d" \
+                                  "-%(levelname)s-%(message)s")
+
+    # log file stream
+    handler = logging.FileHandler(log_file)
+    handler.setLevel(logging.INFO)
+    handler.setFormatter(formatter)
+
+    # log console stream
+    console = logging.StreamHandler()
+    console.setLevel(logging.INFO)
+    console.setFormatter(formatter)
+
+    logger.addHandler(handler)
+    logger.addHandler(console)
+
+    return logger
+
+
+
 def average_gradients(model):
     """ Gradient averaging. """
     size = float(dist.get_world_size())
@@ -164,7 +189,7 @@ def get_test_dataset():
     return test_loader
 
 
-def test(model, test_loader):
+def test(model, test_loader, logger):
     model.eval()
     test_loss = 0
     correct = 0
@@ -177,13 +202,13 @@ def test(model, test_loader):
 
     test_loss /= len(test_loader.dataset)
 
-    print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.3f}%)\n'.format(
+    logger.info('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.3f}%)\n'.format(
         test_loss, correct, len(test_loader.dataset),
         100. * correct / len(test_loader.dataset)))
     return
 
 
-def run(rank, size, batch_size, epochs):
+def run(rank, size, batch_size, epochs, logger):
     """ Distributed Synchronous SGD Example """
     torch.manual_seed(1234)
     train_set, bsz = partition_dataset(batch_size)
@@ -192,7 +217,7 @@ def run(rank, size, batch_size, epochs):
     model = Net()
     model.train()
     
-    print("Model: {}".format(list(model.parameters())[0].mean()))
+    logger.info("Model: {}".format(list(model.parameters())[0].mean()))
 
     optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.5)
 
@@ -219,7 +244,7 @@ def run(rank, size, batch_size, epochs):
             optimizer.step()
 
             if batch_idx % 10 == 0: 
-                print('Rank {} Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+                logger.info('Rank {} Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                     dist.get_rank(), epoch, batch_idx * len(data), len(train_set.dataset),
                     100. * batch_idx / len(train_set), loss.item()))
 
@@ -227,20 +252,20 @@ def run(rank, size, batch_size, epochs):
         tt += t2 - t1
         all_conn_tt += epoch_conn_tt
 
-        print('Rank {} epoch {} iter {} loss {:.5f} cost {:.5f}s ' \
+        logger.info('Rank {} epoch {} iter {} loss {:.5f} cost {:.5f}s ' \
               '(conn: {:.5f} s, ave:{:.5f}s/time)'.format( \
               dist.get_rank(), epoch, len(train_set), epoch_loss / num_batches, \
               t2 - t1, epoch_conn_tt, epoch_conn_tt/len(train_set)))
         
-        test(model, test_loader)
+        test(model, test_loader, logger)
     
-    print("Train {} epochs, cost {:.5f} s({} conn: {:.5f}s " \
+    logger.info("Train {} epochs, cost {:.5f} s({} conn: {:.5f}s " \
           "ave{:.5f}s/epoch), average{:.5f} s / epoch ".format( \
            epochs, tt, format_second(tt), all_conn_tt, \
            all_conn_tt /epochs, tt / epochs))
 
 
-def init_process(args):
+def init_process(args, logger):
     #Initialize the distributed environment.
     dist.init_process_group(
         backend = args.backend,
@@ -248,7 +273,7 @@ def init_process(args):
         rank = args.rank,
         world_size = args.world_size)
     #Run
-    run(args.rank, args.world_size, args.batch_size, args.epochs)
+    run(args.rank, args.world_size, args.batch_size, args.epochs, logger)
 
 
 if __name__ == "__main__":
@@ -271,8 +296,10 @@ if __name__ == "__main__":
     parser.add_argument('--backend', type=str, default="gloo")
     parser.add_argument('--batch_size', type=int, default=64)
     parser.add_argument('--epochs', type=int, default=10)
+    parser.add_argument('--log', type=str, default='log.txt')
     
     args = parser.parse_args()
-    print("Agrs: {}".format(args))
+    logger = init_logger(args.log)
+    logger.info("Agrs: {}".format(args))
     
-    init_process(args)
+    init_process(args, logger)
