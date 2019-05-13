@@ -157,7 +157,6 @@ def train(train_loader, model, criterion, optimizer, epoch, logger):
                     epoch, i, len(train_loader),
                     rank=dist.get_rank(), batch_time=batch_time,
                     data_time=data_time, loss=losses, top1=top1))
-        break
     return epoch_conn_tt
 
 
