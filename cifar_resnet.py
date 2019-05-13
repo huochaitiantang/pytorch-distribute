@@ -291,7 +291,8 @@ def main(args):
 
     # Build lr_scheduler
     lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(
-            optimizer, milestones=[100, 150])
+            optimizer, milestones=[25, 38])
+            # optimizer, milestones=[100, 150])
 
     train_loader, val_loader = build_dataset(args.batch_size)
 
