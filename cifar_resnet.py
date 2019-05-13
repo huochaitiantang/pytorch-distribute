@@ -333,16 +333,15 @@ def main(args):
                 'best_prec1': best_prec1,
             }, filename=os.path.join(save_dir, 'model.th'))
 
-            logger.info(
-                "Train {} epochs, "
-                "total time: {:.5f}s({}), average: {:.5f}s/epoch".format(
-                args.epochs, tt, format_second(tt), tt/args.epochs))
-            logger.info(
-                "Train {} epochs, "
-                "total conn: {:.5f}s({}), average: {:.5f}s/epoch".format(
-                args.epochs, all_conn_tt, format_second(all_conn_tt),
-                all_conn_tt/args.epochs))
-
+    logger.info(
+        "Train {} epochs, "
+        "Total time: {:.5f}s({}), Average: {:.5f}s/epoch".format(
+        args.epochs, tt, format_second(tt), tt/args.epochs))
+    logger.info(
+        "Train {} epochs, "
+        "Total conn: {:.5f}s({}), Average: {:.5f}s/epoch".format(
+        args.epochs, all_conn_tt, format_second(all_conn_tt),
+        all_conn_tt/args.epochs))
 
 
 if __name__ == "__main__":
