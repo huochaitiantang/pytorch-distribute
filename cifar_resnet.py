@@ -191,14 +191,14 @@ def validate(val_loader, model, criterion):
             end = time.time()
 
             if i % print_freq == 0:
-                print('Test: [{0}/{1}]\t'
+                logger.info('Test: [{0}/{1}]\t'
                       'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
                       'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
                       'Prec@1 {top1.val:.3f} ({top1.avg:.3f})'.format(
                           i, len(val_loader), batch_time=batch_time, loss=losses,
                           top1=top1))
 
-    print(' * Prec@1 {top1.avg:.3f}'
+    logger.info(' * Prec@1 {top1.avg:.3f}'
           .format(top1=top1))
 
     return top1.avg
@@ -277,8 +277,11 @@ def main(args):
         rank = args.rank,
         world_size = args.world_size)
 
+    torch.manual_seed(1234)
+
     # Build model
     model = getattr(models, args.arch)
+    logger.info("Model: {}".format(list(model.parameters())[0].mean()))
 
     # Build optimizer
     optimizer = torch.optim.SGD(model.parameters(), args.learning_rate,
