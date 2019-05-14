@@ -8,7 +8,7 @@ import torch.optim
 import torch.utils.data
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
-import resnet
+import models
 import logging
 import torch
 import torch.distributed as dist
@@ -278,7 +278,7 @@ def main(args):
         world_size = args.world_size)
 
     # Build model
-    model = resnet.__dict__[args.arch]()
+    model = getattr(models, args.arch)
 
     # Build optimizer
     optimizer = torch.optim.SGD(model.parameters(), args.learning_rate,
