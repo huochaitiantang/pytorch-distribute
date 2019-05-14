@@ -160,7 +160,7 @@ def train(train_loader, model, criterion, optimizer, epoch, logger):
     return epoch_conn_tt
 
 
-def validate(val_loader, model, criterion):
+def validate(val_loader, model, criterion, logger):
     """
     Run evaluation
     """
@@ -327,7 +327,7 @@ def main(args):
               t2-t1, epoch_conn_tt, epoch_conn_tt/len(train_loader)))
 
         # evaluate on validation set
-        prec1 = validate(val_loader, model, criterion)
+        prec1 = validate(val_loader, model, criterion, logger)
 
         if prec1 > best_prec1:
             best_prec1 = prec1
