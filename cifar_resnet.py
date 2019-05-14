@@ -280,7 +280,7 @@ def main(args):
     torch.manual_seed(1234)
 
     # Build model
-    model = getattr(models, args.arch)
+    model = getattr(models, args.arch)()
     logger.info("Model: {}".format(list(model.parameters())[0].mean()))
 
     # Build optimizer
