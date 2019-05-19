@@ -1,0 +1,83 @@
+2019-05-15 16:27:40,106-train_dist.py:303-INFO-Agrs: Namespace(backend='gloo', batch_size=1536, epochs=10, ip='219.224.168.78', log='log/log_mnist_world3_rank2_batch1536.txt', port='22000', rank=2, world_size=3)
+2019-05-15 16:27:40,200-train_dist.py:220-INFO-Model: 0.00404250156134367
+2019-05-15 16:27:40,703-train_dist.py:249-INFO-Rank 2 Train Epoch: 0 [0/20000 (0%)]	Loss: 2.294981
+2019-05-15 16:27:45,763-train_dist.py:249-INFO-Rank 2 Train Epoch: 0 [5120/20000 (25%)]	Loss: 2.240489
+2019-05-15 16:27:50,449-train_dist.py:249-INFO-Rank 2 Train Epoch: 0 [10240/20000 (50%)]	Loss: 2.145546
+2019-05-15 16:27:55,031-train_dist.py:249-INFO-Rank 2 Train Epoch: 0 [15360/20000 (75%)]	Loss: 2.021187
+2019-05-15 16:27:59,005-train_dist.py:258-INFO-Rank 2 epoch 0 iter 40 loss 2.12687 cost 18.80394s (conn: 11.06578 s, ave:0.27664s/time)
+2019-05-15 16:28:07,939-train_dist.py:207-INFO-
+Test set: Average loss: 1.7574, Accuracy: 7190/10000 (71.900%)
+
+2019-05-15 16:28:08,511-train_dist.py:249-INFO-Rank 2 Train Epoch: 1 [0/20000 (0%)]	Loss: 1.796243
+2019-05-15 16:28:13,664-train_dist.py:249-INFO-Rank 2 Train Epoch: 1 [5120/20000 (25%)]	Loss: 1.394313
+2019-05-15 16:28:18,362-train_dist.py:249-INFO-Rank 2 Train Epoch: 1 [10240/20000 (50%)]	Loss: 1.030298
+2019-05-15 16:28:23,019-train_dist.py:249-INFO-Rank 2 Train Epoch: 1 [15360/20000 (75%)]	Loss: 0.751736
+2019-05-15 16:28:26,899-train_dist.py:258-INFO-Rank 2 epoch 1 iter 40 loss 1.08278 cost 18.95971s (conn: 11.23226 s, ave:0.28081s/time)
+2019-05-15 16:28:35,841-train_dist.py:207-INFO-
+Test set: Average loss: 0.6015, Accuracy: 8392/10000 (83.920%)
+
+2019-05-15 16:28:36,234-train_dist.py:249-INFO-Rank 2 Train Epoch: 2 [0/20000 (0%)]	Loss: 0.624894
+2019-05-15 16:28:40,708-train_dist.py:249-INFO-Rank 2 Train Epoch: 2 [5120/20000 (25%)]	Loss: 0.554855
+2019-05-15 16:28:45,326-train_dist.py:249-INFO-Rank 2 Train Epoch: 2 [10240/20000 (50%)]	Loss: 0.466423
+2019-05-15 16:28:49,941-train_dist.py:249-INFO-Rank 2 Train Epoch: 2 [15360/20000 (75%)]	Loss: 0.401506
+2019-05-15 16:28:53,963-train_dist.py:258-INFO-Rank 2 epoch 2 iter 40 loss 0.47533 cost 18.12089s (conn: 10.38630 s, ave:0.25966s/time)
+2019-05-15 16:29:02,932-train_dist.py:207-INFO-
+Test set: Average loss: 0.4037, Accuracy: 8828/10000 (88.280%)
+
+2019-05-15 16:29:03,326-train_dist.py:249-INFO-Rank 2 Train Epoch: 3 [0/20000 (0%)]	Loss: 0.460677
+2019-05-15 16:29:07,776-train_dist.py:249-INFO-Rank 2 Train Epoch: 3 [5120/20000 (25%)]	Loss: 0.362244
+2019-05-15 16:29:12,345-train_dist.py:249-INFO-Rank 2 Train Epoch: 3 [10240/20000 (50%)]	Loss: 0.315365
+2019-05-15 16:29:16,870-train_dist.py:249-INFO-Rank 2 Train Epoch: 3 [15360/20000 (75%)]	Loss: 0.405130
+2019-05-15 16:29:20,850-train_dist.py:258-INFO-Rank 2 epoch 3 iter 40 loss 0.36166 cost 17.91822s (conn: 10.16047 s, ave:0.25401s/time)
+2019-05-15 16:29:29,800-train_dist.py:207-INFO-
+Test set: Average loss: 0.3394, Accuracy: 9000/10000 (90.000%)
+
+2019-05-15 16:29:30,192-train_dist.py:249-INFO-Rank 2 Train Epoch: 4 [0/20000 (0%)]	Loss: 0.374714
+2019-05-15 16:29:34,699-train_dist.py:249-INFO-Rank 2 Train Epoch: 4 [5120/20000 (25%)]	Loss: 0.368138
+2019-05-15 16:29:39,216-train_dist.py:249-INFO-Rank 2 Train Epoch: 4 [10240/20000 (50%)]	Loss: 0.283216
+2019-05-15 16:29:43,778-train_dist.py:249-INFO-Rank 2 Train Epoch: 4 [15360/20000 (75%)]	Loss: 0.323873
+2019-05-15 16:29:47,763-train_dist.py:258-INFO-Rank 2 epoch 4 iter 40 loss 0.30709 cost 17.96302s (conn: 10.23584 s, ave:0.25590s/time)
+2019-05-15 16:29:56,708-train_dist.py:207-INFO-
+Test set: Average loss: 0.2991, Accuracy: 9097/10000 (90.970%)
+
+2019-05-15 16:29:57,104-train_dist.py:249-INFO-Rank 2 Train Epoch: 5 [0/20000 (0%)]	Loss: 0.335753
+2019-05-15 16:30:01,538-train_dist.py:249-INFO-Rank 2 Train Epoch: 5 [5120/20000 (25%)]	Loss: 0.259662
+2019-05-15 16:30:06,155-train_dist.py:249-INFO-Rank 2 Train Epoch: 5 [10240/20000 (50%)]	Loss: 0.231514
+2019-05-15 16:30:10,910-train_dist.py:249-INFO-Rank 2 Train Epoch: 5 [15360/20000 (75%)]	Loss: 0.279358
+2019-05-15 16:30:14,867-train_dist.py:258-INFO-Rank 2 epoch 5 iter 40 loss 0.26826 cost 18.15819s (conn: 10.42479 s, ave:0.26062s/time)
+2019-05-15 16:30:23,828-train_dist.py:207-INFO-
+Test set: Average loss: 0.2468, Accuracy: 9279/10000 (92.790%)
+
+2019-05-15 16:30:24,221-train_dist.py:249-INFO-Rank 2 Train Epoch: 6 [0/20000 (0%)]	Loss: 0.273718
+2019-05-15 16:30:28,800-train_dist.py:249-INFO-Rank 2 Train Epoch: 6 [5120/20000 (25%)]	Loss: 0.222399
+2019-05-15 16:30:33,367-train_dist.py:249-INFO-Rank 2 Train Epoch: 6 [10240/20000 (50%)]	Loss: 0.198130
+2019-05-15 16:30:37,954-train_dist.py:249-INFO-Rank 2 Train Epoch: 6 [15360/20000 (75%)]	Loss: 0.256801
+2019-05-15 16:30:41,819-train_dist.py:258-INFO-Rank 2 epoch 6 iter 40 loss 0.23966 cost 17.99109s (conn: 10.25603 s, ave:0.25640s/time)
+2019-05-15 16:30:50,773-train_dist.py:207-INFO-
+Test set: Average loss: 0.2515, Accuracy: 9250/10000 (92.500%)
+
+2019-05-15 16:30:51,166-train_dist.py:249-INFO-Rank 2 Train Epoch: 7 [0/20000 (0%)]	Loss: 0.292711
+2019-05-15 16:30:55,669-train_dist.py:249-INFO-Rank 2 Train Epoch: 7 [5120/20000 (25%)]	Loss: 0.226721
+2019-05-15 16:31:00,266-train_dist.py:249-INFO-Rank 2 Train Epoch: 7 [10240/20000 (50%)]	Loss: 0.274194
+2019-05-15 16:31:04,838-train_dist.py:249-INFO-Rank 2 Train Epoch: 7 [15360/20000 (75%)]	Loss: 0.196269
+2019-05-15 16:31:08,758-train_dist.py:258-INFO-Rank 2 epoch 7 iter 40 loss 0.21828 cost 17.98411s (conn: 10.27664 s, ave:0.25692s/time)
+2019-05-15 16:31:17,685-train_dist.py:207-INFO-
+Test set: Average loss: 0.2184, Accuracy: 9349/10000 (93.490%)
+
+2019-05-15 16:31:18,080-train_dist.py:249-INFO-Rank 2 Train Epoch: 8 [0/20000 (0%)]	Loss: 0.244199
+2019-05-15 16:31:22,595-train_dist.py:249-INFO-Rank 2 Train Epoch: 8 [5120/20000 (25%)]	Loss: 0.173213
+2019-05-15 16:31:27,166-train_dist.py:249-INFO-Rank 2 Train Epoch: 8 [10240/20000 (50%)]	Loss: 0.208628
+2019-05-15 16:31:31,751-train_dist.py:249-INFO-Rank 2 Train Epoch: 8 [15360/20000 (75%)]	Loss: 0.186592
+2019-05-15 16:31:35,657-train_dist.py:258-INFO-Rank 2 epoch 8 iter 40 loss 0.20503 cost 17.97110s (conn: 10.28329 s, ave:0.25708s/time)
+2019-05-15 16:31:44,589-train_dist.py:207-INFO-
+Test set: Average loss: 0.2105, Accuracy: 9371/10000 (93.710%)
+
+2019-05-15 16:31:44,983-train_dist.py:249-INFO-Rank 2 Train Epoch: 9 [0/20000 (0%)]	Loss: 0.210698
+2019-05-15 16:31:49,515-train_dist.py:249-INFO-Rank 2 Train Epoch: 9 [5120/20000 (25%)]	Loss: 0.209120
+2019-05-15 16:31:54,058-train_dist.py:249-INFO-Rank 2 Train Epoch: 9 [10240/20000 (50%)]	Loss: 0.215055
+2019-05-15 16:31:58,678-train_dist.py:249-INFO-Rank 2 Train Epoch: 9 [15360/20000 (75%)]	Loss: 0.182759
+2019-05-15 16:32:02,638-train_dist.py:258-INFO-Rank 2 epoch 9 iter 40 loss 0.18920 cost 18.04859s (conn: 10.35846 s, ave:0.25896s/time)
+2019-05-15 16:32:11,716-train_dist.py:207-INFO-
+Test set: Average loss: 0.1937, Accuracy: 9404/10000 (94.040%)
+
+2019-05-15 16:32:11,716-train_dist.py:265-INFO-Train 10 epochs, cost 181.91885 s(00:03:01(h:m:s) conn: 104.67986s ave10.46799s/epoch), average18.19189 s / epoch 
