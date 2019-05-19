@@ -28,6 +28,8 @@ pip install matplotlib
 
 #### Train
 
+Note: The variable `GLOO_SOCKET_IFNAME` in train_mnist.sh should be eth0 or something output by `ifconfig`
+
 * mnist
 ```
 sh train_mnist.sh
