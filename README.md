@@ -26,7 +26,49 @@ pip install torchvision
 pip install matplotlib
 ```
 
-#### Run
+#### Train
+
+* mnist
 ```
-sh train_dis.sh
+sh train_mnist.sh
 ```
+
+* cifar
+```
+sh train_cifar.sh
+```
+
+* multi-cpu(eg, mnist with 2 nodes and node1 ip is 219.224.168.78)
+  * node1 start `sh train_mnist.sh` with setting:
+  ```
+  world_size=2
+  batch_size=96
+  dataset=mnist
+  rank=0
+  
+  python train_dist.py \
+    --rank $rank \
+    --world_size $world_size \
+    --ip 219.224.168.78 \
+    --port 22000 \
+    --batch_size $batch_size \
+    --epochs 10 \
+    --log log/log_${dataset}_world${world_size}_rank${rank}_batch${batch_size}.txt
+  ```
+  
+  * node2 start `sh train_mnist.sh` with setting:
+  ```
+  world_size=2
+  batch_size=96
+  dataset=mnist
+  rank=1
+  
+  python train_dist.py \
+    --rank $rank \
+    --world_size $world_size \
+    --ip 219.224.168.78 \
+    --port 22000 \
+    --batch_size $batch_size \
+    --epochs 10 \
+    --log log/log_${dataset}_world${world_size}_rank${rank}_batch${batch_size}.txt
+  ```
