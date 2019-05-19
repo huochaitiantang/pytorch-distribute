@@ -52,23 +52,44 @@ def vis(save_name_pre, logs, labels, cifar):
             plt.plot(range(1, len(valid) + 1), valid, label = labels[idx], marker='.')
         
         plt.legend()
-        plt.savefig("log/{}.png".format(cur_title))
+        plt.savefig("log/pic/{}.png".format(cur_title))
 
 
-if __name__ == "__main__":
-
+def vis_mnist_acc_epoch():
     logs = [
-            "log/log_mnist_world1_rank0_batch384.txt",
-            "log/log_mnist_world2_rank0_batch384.txt",
-            "log/log_mnist_world3_rank0_batch384.txt"
+            "log/mnist/log_mnist_world1_rank0_batch384.txt",
+            "log/mnist/log_mnist_world2_rank0_batch384.txt",
+            "log/mnist/log_mnist_world3_rank0_batch384.txt"
     ]
+    
     labels = [
             "world1",
             "world2",
             "world3"
     ]
 
-    save_name_pre = "mnist_epoch_acc_batch384"
+    save_name_pre = "mnist_batch384"
     vis(save_name_pre, logs, labels, cifar=False)
 
 
+def vis_cifar_acc_epoch():
+    logs = [
+            "log/cifar/log_cifar_alexnet_world1_rank0_batch192.txt",
+            "log/cifar/log_cifar_alexnet_world2_rank0_batch192.txt",
+            "log/cifar/log_cifar_alexnet_world3_rank0_batch192.txt"
+    ]
+    
+    labels = [
+            "world1",
+            "world2",
+            "world3"
+    ]
+
+    save_name_pre = "cifar_batch192"
+    vis(save_name_pre, logs, labels, cifar=True)
+
+
+if __name__ == "__main__":
+
+    vis_mnist_acc_epoch()
+    vis_cifar_acc_epoch()

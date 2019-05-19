@@ -3,8 +3,8 @@
 # WHATEVER IN IFCONFIG (like eth0 or something  
 export GLOO_SOCKET_IFNAME=enp3s0
 
-world_size=3
-batch_size=48
+world_size=1
+batch_size=96
 dataset=mnist
 rank=0
 

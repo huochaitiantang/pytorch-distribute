@@ -79,115 +79,68 @@ def vis(save_name_pre, ress, labels, xs, valid_keys):
             plt.plot(xs, batch_data, label = labels[idx], marker='.')
         
         plt.legend()
-        plt.savefig("pic/{}.png".format(cur_title))
+        plt.savefig("log/pic/{}.png".format(cur_title))
+
+
+def get_mnist_logs(ignore_rank = False):
+    batches = [96, 192, 384, 768, 1536]
+    worlds = [1, 2, 3]
+    logs = []
+    for world in worlds:
+        rank_cnt = 1 if ignore_rank else world
+        for rank in range(rank_cnt):
+            logs.append(["log/mnist/log_mnist_world{}_rank{}_batch{}.txt"\
+                         .format(world, rank, batch) for batch in batches])
+    return batches, logs
+
+
+def get_cifar_logs(ignore_rank = False):
+    batches = [96, 192, 384]
+    worlds = [1, 2, 3]
+    logs = []
+    for world in worlds:
+        rank_cnt = 1 if ignore_rank else world
+        for rank in range(rank_cnt):
+            logs.append(["log/cifar/log_cifar_alexnet_world{}_rank{}_batch{}.txt"\
+                         .format(world, rank, batch) for batch in batches])
+    return batches, logs
+             
+
+def vis_mnist_acc():
+    batches, logs = get_mnist_logs(ignore_rank = True)
+    labels = ["world1", "world2", "world3"]
+    ress = format_logss(logs, cifar=False)
+    vis("mnist_batch", ress, labels, batches, ["Accuracy"])
+    
+
+def vis_cifar_acc():
+    batches, logs = get_cifar_logs(ignore_rank = True)
+    labels = ["world1", "world2", "world3"]
+    ress = format_logss(logs, cifar=True)
+    vis("cifar_batch", ress, labels, batches, ["Accuracy"])
+    
+
+def vis_mnist_cost():
+    batches, logs = get_mnist_logs()
+    labels = ["world1_rank0", "world2_rank0", "world2_rank1",
+              "world3_rank0", "world3_rank1", "world3_rank2"]
+    ress = format_logss(logs, cifar=False)
+    vis("mnist_batch", ress, labels, batches, ["Cost", "Cost_Train", "Conn_Ratio"])
+
+
+def vis_cifar_cost():
+    batches, logs = get_cifar_logs()
+    labels = ["world1_rank0", "world2_rank0", "world2_rank1",
+              "world3_rank0", "world3_rank1", "world3_rank2"]
+    ress = format_logss(logs, cifar=True)
+    vis("cifar_batch", ress, labels, batches, ["Cost", "Cost_Train", "Conn_Ratio"])
 
 
 if __name__ == "__main__":
 
-    cifar_logs = [
-        [
-            "exp/log_cifar_alexnet_world1_rank0_batch96.txt",
-            "exp/log_cifar_alexnet_world1_rank0_batch192.txt",
-            "exp/log_cifar_alexnet_world1_rank0_batch384.txt"
-        ],
-        [
-            "exp/log_cifar_alexnet_world2_rank0_batch96.txt",
-            "exp/log_cifar_alexnet_world2_rank0_batch192.txt",
-            "exp/log_cifar_alexnet_world2_rank0_batch384.txt"
-        ],
-        [
-            "exp/log_cifar_alexnet_world2_rank1_batch96.txt",
-            "exp/log_cifar_alexnet_world2_rank1_batch192.txt",
-            "exp/log_cifar_alexnet_world2_rank1_batch384.txt"
-        ],
-        [
-            "exp/log_cifar_alexnet_world3_rank0_batch96.txt",
-            "exp/log_cifar_alexnet_world3_rank0_batch192.txt",
-            "exp/log_cifar_alexnet_world3_rank0_batch384.txt"
-        ],
-        [
-            "exp/log_cifar_alexnet_world3_rank1_batch96.txt",
-            "exp/log_cifar_alexnet_world3_rank1_batch192.txt",
-            "exp/log_cifar_alexnet_world3_rank1_batch384.txt"
-        ],
-        [
-            "exp/log_cifar_alexnet_world3_rank2_batch96.txt",
-            "exp/log_cifar_alexnet_world3_rank2_batch192.txt",
-            "exp/log_cifar_alexnet_world3_rank2_batch384.txt"
-        ]
-    ]
-
-
-    mnist_logs = [
-        [
-            "log/log_mnist_world1_rank0_batch96.txt",
-            "log/log_mnist_world1_rank0_batch192.txt",
-            "log/log_mnist_world1_rank0_batch384.txt",
-            "log/log_mnist_world1_rank0_batch768.txt",
-            "log/log_mnist_world1_rank0_batch1536.txt",
-        ],
-        [
-            "log/log_mnist_world2_rank0_batch96.txt",
-            "log/log_mnist_world2_rank0_batch192.txt",
-            "log/log_mnist_world2_rank0_batch384.txt",
-            "log/log_mnist_world2_rank0_batch768.txt",
-            "log/log_mnist_world2_rank0_batch1536.txt",
-        ],
-        [
-            "log/log_mnist_world2_rank1_batch96.txt",
-            "log/log_mnist_world2_rank1_batch192.txt",
-            "log/log_mnist_world2_rank1_batch384.txt",
-            "log/log_mnist_world2_rank1_batch768.txt",
-            "log/log_mnist_world2_rank1_batch1536.txt",
-        ],
-        [
-            "log/log_mnist_world3_rank0_batch96.txt",
-            "log/log_mnist_world3_rank0_batch192.txt",
-            "log/log_mnist_world3_rank0_batch384.txt",
-            "log/log_mnist_world3_rank0_batch768.txt",
-            "log/log_mnist_world3_rank0_batch1536.txt",
-        ],
-        [
-            "log/log_mnist_world3_rank1_batch96.txt",
-            "log/log_mnist_world3_rank1_batch192.txt",
-            "log/log_mnist_world3_rank1_batch384.txt",
-            "log/log_mnist_world3_rank1_batch768.txt",
-            "log/log_mnist_world3_rank1_batch1536.txt",
-        ],
-        [
-            "log/log_mnist_world3_rank2_batch96.txt",
-            "log/log_mnist_world3_rank2_batch192.txt",
-            "log/log_mnist_world3_rank2_batch384.txt",
-            "log/log_mnist_world3_rank2_batch768.txt",
-            "log/log_mnist_world3_rank2_batch1536.txt",
-        ],
-    ]
-
-
-    labels_all = [
-            "world1_rank0",
-            "world2_rank0",
-            "world2_rank1",
-            "world3_rank0",
-            "world3_rank1",
-            "world3_rank2"
-    ]
-
-    labels_world = [
-            "world1",
-            "world2",
-            "world3"
-    ]
-
-    #xs = [96, 192, 384]
-    xs = [96, 192, 384, 768, 1536]
-
-    save_name_pre = "mnist_batch"
-    #valid_keys = ["Accuracy"]
-    #valid_keys = ["Cost", "Cost_Train"]
-    valid_keys = ["Conn_Ratio"]
-
-    ress = format_logss(mnist_logs, cifar=False)
-    vis(save_name_pre, ress, labels_all, xs, valid_keys)
+    vis_mnist_acc()
+    vis_mnist_cost()
+    vis_cifar_acc()
+    vis_cifar_cost()
 
 
