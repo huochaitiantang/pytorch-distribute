@@ -18,8 +18,9 @@ def format_log(file_name, cifar=False):
             all_t = float(re.split(r'[ s]', lines[-1])[8])
             conn_t = float(re.split(r'[ s]', lines[-1])[13])
             train_t = all_t - conn_t
+        print(conn_t, all_t, conn_t/all_t)
 
-    return acc, all_t, conn_t, train_t
+    return acc, all_t, conn_t, train_t, conn_t / all_t
 
 
 def format_logss(file_namess, cifar=False):
@@ -27,28 +28,34 @@ def format_logss(file_namess, cifar=False):
         "Accuracy": [],
         "Cost": [],
         "Cost_Conn": [],
-        "Cost_Train": []
+        "Cost_Train": [],
+        "Conn_Ratio": []
     }
     for file_names in file_namess:
         batch_acc = []
         batch_all_t = []
         batch_conn_t = []
         batch_train_t = []
+        batch_conn_ratio = []
         for file_name in file_names:
-            acc, all_t, conn_t, train_t = format_log(file_name, cifar)
+            acc, all_t, conn_t, train_t, conn_ratio = format_log(file_name, cifar)
             batch_acc.append(acc)
             batch_all_t.append(all_t)
             batch_conn_t.append(conn_t)
             batch_train_t.append(train_t)
+            batch_conn_ratio.append(conn_ratio)
 
         ress['Accuracy'].append(batch_acc)
         ress['Cost'].append(batch_all_t)
         ress['Cost_Conn'].append(batch_conn_t)
         ress['Cost_Train'].append(batch_train_t)
+        ress['Conn_Ratio'].append(batch_conn_ratio)
     return ress
 
 
 def vis(save_name_pre, ress, labels, xs, valid_keys):
+
+    print(ress)
     
     for item_key in ress.keys():
         if item_key not in valid_keys:
@@ -63,7 +70,7 @@ def vis(save_name_pre, ress, labels, xs, valid_keys):
         plt.clf()
         plt.title(cur_title)
         plt.xlabel("Batch")
-        if item_key != "Accuracy":
+        if item_key == "Cost" or item_key == "Cost_Train":
             plt.ylabel(item_key + "/s")
         else:
             plt.ylabel(item_key)
@@ -175,9 +182,10 @@ if __name__ == "__main__":
     #xs = [96, 192, 384]
     xs = [96, 192, 384, 768, 1536]
 
-    save_name_pre = "mnsit_batch"
+    save_name_pre = "mnist_batch"
     #valid_keys = ["Accuracy"]
-    valid_keys = ["Cost", "Cost_Train"]
+    #valid_keys = ["Cost", "Cost_Train"]
+    valid_keys = ["Conn_Ratio"]
 
     ress = format_logss(mnist_logs, cifar=False)
     vis(save_name_pre, ress, labels_all, xs, valid_keys)
